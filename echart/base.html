@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+          <title>   </title>
+          <!-- 引入 echarts.js -->
+          <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>
+     </head>
+    <body>
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+        <div style="height: 500px;width: 500px;border: 1px solid #ccc;" id="container"></div>
+        <script src="echarts.min.js"></script>
+        <script type="text/javascript">
+            var container = document.getElementById('container');
+            // 初始化加载对象myContainer
+            var myContainer = echarts.init(container);
+            //未获取数据前，显示loading加载动画
+            myContainer.showLoading();
+
+            function bindData() {
+                //为了效果明显，我们做了延迟读取数据
+                setTimeout(function() {
+                    //异步加载数据,get请求我们刚刚准备的json文件,正式开发中调用相应的接口
+                    
+                    $.get('data.json', function(res) {
+                        console.log(res)
+                        //获取数据后，隐藏loading动画
+                        myContainer.hideLoading();
+                        myContainer.setOption(option = {
+                            title: {
+                                text: 'echartsLoading加载'
+                            },
+                            tooltip: {},
+                            legend: {},
+                            // xAxis代表x轴的数据
+                            xAxis: {
+                                data: res.name,
+                                // 字段对应从json里面的字段
+                            },
+                            // yAxis代表y轴的数据,不写会自动适应数据
+                            yAxis: {
+                                data:res.data,
+                            },
+                            // series代表鼠标悬浮到图标上时提示的对应信息
+                            series: [{
+                                name: '访问量',
+                                type: 'bar',
+                                data: res.data,
+                                // 字段对应从json里面的字段
+                            }]
+                        });
+                    })
+                }, 2000)
+            }
+            bindData();
+        </script>
+            
+    </body>
+</html>
+ 
+

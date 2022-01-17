@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>会员入会年分布</title>
+    <!-- 引入 echarts.js -->
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+	
+    <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>
+</head>
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 600px;height:400px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        myChart.showLoading();
+        myChart.setOption({
+            title:{
+                    text:'各年份会员入会人数',
+                    left: 'center'
+                },
+                xAxis: {
+                    type:'category',
+                    data: [],
+                    name:'年份'
+                },
+                yAxis: {
+                    type:'value',
+                    name:'人数',
+                    
+                },
+                series: [{
+                    data: [],
+                    type: 'bar',
+                    itemStyle: {
+                                normal: {
+                                    // label: {
+                                    // 			show: true, //开启显示
+                                    // 			position: 'top', //在上方显示
+                                    // 			textStyle: { //数值样式
+                                    // 			color: 'black',
+                                    // 			fontSize: 16
+                                    // 			}
+                                    // }
+                                    
+                    　　　　　　　　//这里是重点
+                                    color: function(params) {
+                                    //注意，如果颜色太少的话，后面颜色不会自动循环，最好多定义几个颜色
+                                        var colorList = ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83', '#b975cb','#85ca79','#9b79ca','#7da6ca'];
+                                        return colorList[params.dataIndex]
+                                    }
+                                }
+                            }
+                }]
+        });
+        $.get('hbuilder.json').done(function(dat){
+            console.log(dat)
+            myChart.hideLoading();
+            myChart.setOption({
+                xAxis:{
+                    data:dat.FFP_YEAR
+                },
+                series:{
+                    data:dat.count
+                }
+            })
+        })
+
+    </script>
+</body>
+</html>

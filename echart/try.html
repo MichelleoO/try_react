@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>
+    <title>Document</title>
+    <style type="text/css">
+        .main{margin:0 auto;width: 100%;
+         overflow-y: auto; position: relative;border:1px #000 solid; }
+        #mainf{height: 30px;background: #70787b;  }
+        #come{ height: 20px;margin-left:50px;width: 80px;background: red;  }
+        .startmian{height: 100%;width: 100%;position: relative;}
+    </style>
+</head>
+<body>
+    <div id="come"  style="width: 200px">数据进入 </div>
+       <div id="startmian" class="startmian"></div>
+       <script>
+           var a=[{"F_X":["2017-3-1","2017-3-15","2017-4-1","2017-4-12","2017-5-21","2017-6-5","2017-8-12","2017-9-1","2017-10-11"],"F_Y":[{"name":"TT","type":"line","symbol":"emptycircle","data":["23","56","32","41","32","45","39","47","58"]},{"name":"KK","type":"line","symbol":"emptycircle","data":["233","345","322","251","342","350","233","279","228"]}],"F_Z":"温度"},{"F_X":["2017-3-1","2017-3-15","2017-4-1","2017-4-12","2017-5-21","2017-6-5","2017-8-12","2017-9-1","2017-10-11"],"F_Y":[{"name":"TT","type":"line","symbol":"emptycircle","data":["34","45","32","25","57","45","39","47","58"]},{"name":"KK","type":"line","symbol":"emptycircle","data":["345","345","322","251","373","350","290","279","228"]}],"F_Z":"水压"},{"F_X":["2017-3-1","2017-3-15","2017-4-1","2017-4-12","2017-5-21","2017-6-5","2017-8-12","2017-9-1","2017-10-11"],"F_Y":[{"name":"TT","type":"line","symbol":"emptycircle","data":["23","56","32","25","57","45","39","47","58"]},{"name":"KK","type":"line","symbol":"emptycircle","data":["33","45","32","51","73","50","90","79","48"]}],"F_Z":"气压"}];
+
+var dataGoz=[], //总数据
+ mdataeahars=[]; //echarts集合 ，用于联动使用
+require.config({
+    paths: {
+        echarts: 'js/echarts-2.2.7/src'
+    }
+}); 
+(function(){
+$.each(a,function(i,t){   //添加标线样式，这里是绘制多条标线
+    $.each(t.F_Y,function(m,n){
+        n.markLine={itemStyle:{
+            normal:{lineStyle:{type:'solid',color:'#000'},label:{show:true,position:'left'}}
+            },large:true,silent:false,data:[]}
+});})
+dataGoz=a; //得到赋值
+startmiandiv();   //开始制图
+} 
+)();
+//开始方法
+function startmiandiv(){
+$("#come").click(function(){  //点击数据进入
+$("#come").hide();
+nstart(dataGoz);  //开始入口
+});   
+}
+//核心绘图方法  
+function  nstart(dataGoz){
+    var  mainheight=0,
+    bodyheight=document.body.clientHeight,  //获取总高度
+    mainheight=(bodyheight-40),      //分配高度
+    startmiandiv=$('#startmian');
+    startmiandiv.empty();　　 mdataeahars=[];
+    var maindiv='<div  class="main"  style="height:'+mainheight+'px;max-height:'+mainheight+'px"></div>'; 
+    startmiandiv.append(maindiv);
+    mainFn(dataGoz,mdataeahars); 
+    linkFn(dataGoz,dataGoz.length);  //联动方法
+}  
+//charts画图入口方法
+function  mainFn(data,mdataeahars){ 
+    var jing_class='jing',
+    sv="", //动态生成名称
+    main0=$(".main")[0];
+       $.each(data,function(i,t){
+        var  div1='<div class="'+jing_class+'" style="height:150px;width:100%;"></div>';
+                $(main0).append(div1);
+                sv=jing_class+i;
+                youjin(i,t,sv,mdataeahars,data.length,jing_class);             
+        });        
+}
+//油井封装数据
+function youjin(item,t,tempmyech,mdataeahars,alength,jin_cid){  
+    var  legendshow=false; //只让第一个lengend显示
+    if(item==0){
+        legendshow=true;
+    }
+    require(
+            [
+                'echarts',
+                'echarts/chart/bar', // 使用柱状图就加载bar模块，按需加载
+                'echarts/chart/line'
+            ],
+  function (ec){ 
+   tempmyech = ec.init($("."+jin_cid)[item]);  // 基于准备好的dom，初始化echarts实例 
+    $($("."+jin_cid)[item]).contextmenu(
+       function(e){
+            e.preventDefault();
+            chartcontextmenu()
+       }
+    );
+      $($("."+jin_cid)[item]).bind("dblclick.a", chartDbck);  //双击方法，防止事件冲突
+            var sj=[]; //名称集合
+            var f_y=t.F_Y;
+            var colors=[
+                     '#ff7f50','#87cefa','#da70d6','#32cd32','#6495ed',
+                     '#ff69b4','#ba55d3','#cd5c5c','#ffa500','#40e0d0',
+                     '#1e90ff','#ff6347','#7b68ee','#00fa9a','#ffd700',
+                     '#6699FF','#ff6666','#3cb371','#b8860b','#30e0e0'
+                    ];
+            for(var i=0;i<f_y.length;i++){
+                sj.push(f_y[i].name);
+               // forstr+= "<br/><font color="+colors[i]+"> ● </font>{a"+i+"} : {c"+i+"}"
+            }   
+            var option = {
+                    tooltip: {
+                        trigger: 'axis', //坐标轴触发提示框，多用于柱状、折线图中
+                        formatter:  function (param){
+                         var forstr=""+param[0].name;
+                         for(var i=0, h=param.length;i<h;i++){
+                        forstr+= "<br/><font color="+colors[i]+"> ● </font>"+param[i].seriesName+" : "+param[i].value+""
+                                    }
+                          Fmtresult(param[0].name,);  //通过它传递值
+                        return   forstr;         
+                  },
+                        axisPointer: {
+                            type: 'cross'
+                        },        
+                    },
+                    grid: {
+                        y:25,
+                        left: '3%',
+                        right: '4%',
+                        height:"64%",
+                        containLabel: true
+                    },
+                    dataZoom : {
+                        y:130,
+                        show : false,    //
+                        realtime: true,
+                        height:15,
+                        start : 0,
+                        end : 100
+                    },
+            toolbox: {    //工具栏显示             
+                        show: true,
+                         x:900,
+                        feature: { 
+                            dataZoom : {
+                                show : true,  //legendshow
+                                title : {
+                                    dataZoom : '区域缩放',
+                                    dataZoomReset : '区域缩放后退'
+                                }
+                            },
+                             restore : {
+                                show : true,  
+                                title : '还原'
+                            },           
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        position:'bottom',
+                        boundaryGap : true,
+                        axisTick: {onGap:false},
+                        splitLine: {show:false},
+                        data: t.F_X ,     //填入X轴数据
+                    },
+                    color:colors,
+                    legend: {    //图表上方的类别显示           
+                        show:legendshow,
+                        data:sj
+                    },
+                    series: f_y, 
+                    yAxis : [   
+                        {
+                             type : 'value',
+                             name : t.F_Z                 
+                         }                
+                    ]
+                };   
+      var ecConfig = require('echarts/config')
+                tempmyech.showLoading();    //数据加载完之前先显示一段简单的loading动画
+                tempmyech.hideLoading();    //隐藏加载动画
+                tempmyech.resize();
+                tempmyech.setOption(option);    //载入图表
+                tempmyech.on(ecConfig.EVENT.CLICK, eConsole);   //网上经典方法
+                tempmyech.on('click',  conck);  //精简版方法
+                mdataeahars.push(tempmyech);
+          }
+    )}
+       </script>
+</body>
+</html>

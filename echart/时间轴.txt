@@ -1,0 +1,28 @@
+#工具箱
+toolbox: {
+                feature: {
+                dataZoom: {//y轴放大
+                    yAxisIndex: 'none'
+                },
+                restore: {},//返回
+                saveAsImage: {}//保存
+                }
+            },
+
+#x轴下的拖动部分
+dataZoom: [
+                {
+                type: 'inside',
+                start: 0,
+                end: 200
+                },
+                {
+                start: 0,
+                end: 200
+                }
+            ],
+
+#script
+<script src="https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+    
+    <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>
